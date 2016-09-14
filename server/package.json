@@ -1,0 +1,19 @@
+{
+  "name": "hackman",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "prestart": "npm install",
+    "start": "nodemon --debug app/server.js",
+    "postinstall": "node -e \"/*https://gist.github.com/branneman/8048520#gistcomment-1412502*/ var srcpath='../app'; var dstpath='node_modules/app';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "debug": "^2.2.0",
+    "express": "^4.14.0",
+    "morgan": "^1.7.0",
+    "nodemon": "^1.10.2",
+    "q": "^1.4.1"
+  }
+}
