@@ -8,6 +8,8 @@ var express = require('express'),
 var morgan = require('morgan');
 app.use(morgan('combined'))
 
+//Initialize mongodb here
+
 //API endpoints
 app.use('/api/user', require('app/users/router'));
 
