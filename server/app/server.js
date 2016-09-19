@@ -6,6 +6,8 @@ var app = require('app/index');
 //The config file
 var config = require('app/util/config');
 
+var db = require('app/util/db')
+
 app.listen(config.express.port, function(error) {
     if (error) {
         console.error('Unable to listen for connections', error);

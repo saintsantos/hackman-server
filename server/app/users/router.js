@@ -1,7 +1,9 @@
 //express stuff
 var express = require('express'),
     router = express.Router(),
-    app = express();
+    app = express(),
+
+    user = require('./user_model');
 
 
 
