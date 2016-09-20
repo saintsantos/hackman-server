@@ -7,6 +7,14 @@ var express = require('express'),
 
 
 
+function getUser(req, res, next) {
+    //console.log(req.query);
+    user.findOne({'username': req.query.username}, function(err, user) {
+        if (err) return handleError(err);
+        res.json(user);
+    })
+}
+
 function sayHi(req, res, next) {
     res.send({
         hi: 'hi!'
@@ -14,6 +22,6 @@ function sayHi(req, res, next) {
 }
 
 //Just a test code for our endpoint
-router.post('/hi', sayHi);
+router.get('/hi', getUser);
 
 module.exports = router;
