@@ -9,7 +9,7 @@ var express = require('express'),
 
 function getUser(req, res, next) {
     //console.log(req.query);
-    user.findOne({'username': req.query.username}, function(err, user) {
+    user.findOne({'username': req.query.username, 'password': req.query.password}, function(err, user) {
         if (err) return handleError(err);
         res.json(user);
     })
