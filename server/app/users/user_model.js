@@ -6,11 +6,11 @@ var Schema = mongoose.Schema;
 var userSchema = new Schema({
     username: String,
     email: String,
-    pasword: String,
+    password: String,
     jwt: String
-}, {collection: 'users'});
+});
 
-var userModel = mongoose.model('User', userSchema);
+var userModel = mongoose.model('user', userSchema);
 
 module.exports = userModel;
 //var collection = db.get()

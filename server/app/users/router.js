@@ -18,11 +18,19 @@ function newUser(req, res, next) {
     //req is where all of your params are.
     //Get the info you need by calling req.query.<what you're looking for>
     //ex: password - req.qeury.password
+    var newUser = new user({'username': req.query.username, 'email': req.query.email,
+                            'password': req.query.password, 'jwt': req.query.jwt});
+    newUser.save(function(err) {
+        if (err) return handleError(err);
+        console.log("Saved user!");
+    }).then(function() {
+        res.send(newUser);
+    })
 }
 
 //Just a test code for our endpoint
 router.get('/login', getUser);
 
-router.post('/signup', newUser)
+router.post('/signup', newUser);
 
 module.exports = router;
