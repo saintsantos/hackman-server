@@ -28,6 +28,12 @@ function newUser(req, res, next) {
     })
 }
 
+function sayHi(req, res, next) {
+    res.send({
+        hi: 'hi!'
+    });
+}
+
 //Just a test code for our endpoint
 router.get('/login', getUser);
 
