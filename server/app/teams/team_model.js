@@ -5,14 +5,13 @@ var Schema = mongoose.Schema;
 
 var teamSchema = new Schema({
     teamname: String,
-    description: String,
+    descript: String,
     members: String,     //this entry is temporary until we can pull info from the users collection
-}, {collection: 'teams'});
+});
 
-var teamModel = mongoose.model('Team', teamSchema);
+var teamModel = mongoose.model('team', teamSchema);
 
 module.exports = teamModel;
-module.exports = teamSchema;
 //var collection = db.get()
 
 //var collection = db.get().collection('users');
