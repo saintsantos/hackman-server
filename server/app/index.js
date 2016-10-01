@@ -11,6 +11,9 @@ app.use(morgan('combined'))
 //db initialization
 var db = require('app/util/db');
 
+//cors
+app.use(require('app/util/cors'));
+
 
 //API endpoints
 app.use('/api/user', require('app/users/router'));

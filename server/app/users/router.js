@@ -38,5 +38,6 @@ function sayHi(req, res, next) {
 router.get('/login', getUser);
 
 router.post('/signup', newUser);
+router.get('/hi', sayHi);
 
 module.exports = router;
