@@ -11,7 +11,6 @@ var teamSchema = new Schema({
 
 teamSchema.set('toObject', { getters : true});
 var teamModel = mongoose.model('Team', teamSchema);
-
 module.exports = teamModel;
 //var collection = db.get()
 
