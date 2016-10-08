@@ -7,9 +7,13 @@ var userSchema = new Schema({
     username: String,
     email: String,
     password: String,
-    jwt: String
+    jwt: String,
+    first_name: String,
+    last_name: String,
+    role: String,
+    skills: String
 });
-
+userSchema.set('toObject', {getters: true});
 var userModel = mongoose.model('user', userSchema);
 
 module.exports = userModel;

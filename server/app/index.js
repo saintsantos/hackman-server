@@ -14,6 +14,7 @@ var db = require('app/util/db');
 
 //API endpoints
 app.use('/api/user', require('app/users/router'));
+app.use('/api/team', require('app/teams/router'));
 
 
 app.use(function(req, res, next) {
