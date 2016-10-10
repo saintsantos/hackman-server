@@ -25,7 +25,7 @@ function newTeam(req, res, next) {
 }
 
 function deleteTeam(req, res, next) {
-  team.remove({ teamname: req.query.teamname, description: req.query.descript,
+  team.remove({ teamname: req.params.name, description: req.query.descript,
                members: req.query.members }, function (err) {
   if (err) return handleError(err);
   else{console.log("Deleted team.");};
