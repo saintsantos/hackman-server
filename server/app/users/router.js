@@ -9,7 +9,7 @@ var express = require('express'),
 
 
 function getUser(req, res, next) {
-    //console.log(req.query);
+    console.log(req.query);
     user.findOne({'username': req.query.username, 'password': req.query.password}, function(err, user) {
         if (err) return handleError(err);
         res.json(user);
@@ -40,7 +40,7 @@ function sayHi(req, res, next) {
 }
 
 //Just a test code for our endpoint
-router.post('/login', jsonParser, getUser);
+router.get('/login', getUser);
 
 router.post('/signup', newUser);
 router.get('/hi', sayHi);
