@@ -12,6 +12,24 @@ function getUser(req, res, next) {
     user.findOne({'username': req.query.username}, function(err, user) {
         if (err) return handleError(err);
         res.json(user);
+
+    });
+}
+
+function newUser(req, res, next) {
+    //req is where all of your params are.
+    //Get the info you need by calling req.query.<what you're looking for>
+    //ex: password - req.qeury.password
+    var newUser = new user({'username': req.query.username, 'email': req.query.email,
+                            'password': req.query.password, 'first_name': req.query.first_name,
+                            'last_name': req.query.last_name, 'role': req.query.role,
+                            'skills': 'I have skills',
+                            'jwt': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2hhY2ttYW4tcHJvdG8uY29tIiwic3ViIjoibWFpbHRvOnQuam9obnNvbkBzdXBlcmJhZGFzc2FuZGNvb2wuY29tIiwibmJmIjoxNDc1MjcwMzMzLCJleHAiOjE1MDY4MDYzMzMsImlhdCI6MTQ3NTI3MDMzMywianRpIjoiaWQ4Njc1MzA5IiwidHlwIjoiaHR0cHM6Ly9oYWNrbWFuLXByb3RvLmNvbS9wcm90byJ9.rRVkZW7k2Ph6i5NaM7PUyN2i0XtVOV-sYpcmwkfJ21E'});
+    newUser.save(function(err) {
+        if (err) return handleError(err);
+        console.log("Saved user!");
+    }).then(function() {
+        res.send(newUser);
     })
 }
 
