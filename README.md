@@ -79,4 +79,5 @@ acccepts parameters of
 ths endpoint will create a new user and add it to the mongodb backend.
 
     `/api/user/hi`
+    `Method: GET`
 a test endpoint to check that a call is being sent and accepted properly by the backend.
