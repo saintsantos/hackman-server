@@ -10,8 +10,8 @@ var userSchema = new Schema({
     email: String,
     first_name: String,
     last_name: String,
-    role: String,
-    skills: String
+    role: [],
+    skills: []
 });
 userSchema.set('toObject', {getters: true});
 var userModel = mongoose.model('user', userSchema);

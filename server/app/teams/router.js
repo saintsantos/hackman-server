@@ -38,8 +38,8 @@ function modifyTeam(req, res, next) {
   //may be a good idea to switch to unique IDs as this will update all
   //collections matching the given criteria
 
-  var new_name = { teamname: req.query.teamname}
-  , new_desc = {proj_desc: req.query.proj_desc}
+  var new_name = req.query.teamname
+  , new_desc = req.query.proj_desc
   , adding_member = req.query.add,
     del_member = req.query.del,
     o_name = {teamname: req.query.original_name};
@@ -48,24 +48,19 @@ function modifyTeam(req, res, next) {
   //which is wonderful and terrible at the same time as that means unless otherwise
   //noted, these messy if statements will do
 
-  //BUG: if findOne doesn't find a document, it'll still try to set these things
-  //replace this one findOne with 4 findOneAndUpdates to fix
-  team.findOne(o_name,function(err,doc){
-    if (err) return handleError(err);
-      //time to set up the fountain of if's
-    if(new_name){doc.teamname = req.query.teamname;}
-    if(new_desc){doc.proj_desc = req.query.proj_desc;}
-    //yes, I know we don't nest a findOne inside a findeOne, but this needs to go out now. will fix later
-    if(adding_member){team.findOneAndUpdate(o_name, {$addToSet: {teammates: req.query.member}}, function (err, tank) {
-      if (err) return handleError(err);
-      });}
-    if(del_member){team.findOneAndUpdate(o_name, {$pull: {teammates: req.query.member}}, function (err, tank) {
-      if (err) return handleError(err);
-      });}
-    doc.save();
-    res.send(doc);
-  });
-
+  if(new_desc){team.findOneAndUpdate(o_name,{proj_desc: req.query.proj_desc},function(err,upd){
+    if(err) return handleError(err);
+  });}
+  if(adding_member){team.findOneAndUpdate(o_name,{$addToSet: {teammates: req.query.member}},function(err,upd){
+    if(err) return handleError(err);
+  });}
+  if(del_member){team.findOneAndUpdate(o_name,{$pull: {teammates: req.query.member}},function(err,upd){
+    if(err) return handleError(err);
+  });}
+  if(new_name){team.findOneAndUpdate(o_name,{teamname: req.query.teamname},function(err,upd){
+    if(err) return handleError(err);
+  });}
+  res.send({status: "updated!"});
 }
 
 
