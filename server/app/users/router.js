@@ -4,32 +4,64 @@ var express = require('express'),
     app = express(),
 
     jsonParser = require('app/util/body-parse').json,
+    auth = require('app/util/auth'),
 
-    user = require('./user_model');
+    Users = require('./user_model');
 
 
 function getUser(req, res, next) {
+    //console.log(req.query);
+    //Don't have to handle an improper login for our application. Aith0 let's us do this properly
+    jwt = req.get('token');
+    email = req.query.email;
+    username = req.query.username;
     console.log(req.query);
-    user.findOne({'username': req.query.username, 'password': req.query.password}, function(err, user) {
+    Users.findOne({'username': req.query.username, 'email': req.query.email}, function(err, user) {
         if (err) return handleError(err);
-        res.json(user);
+        if (!user) {
+            newUser(req.query.email, req.query.username, jwt, res);
+        } else {
+            id = user._id;
+            console.log('id: ' + id);
+            Users.findByIdAndUpdate({_id: id}, { $set: {'jwt': jwt}}, function(err, user) {
+                //After we find our user, strip the jwt out of the response and send the profile up to the client
+                res.json({
+                    'username': user.username,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'role': user.role,
+                    'skills': user.skills
+                })
+            });
+        }
     });
 }
 
-function newUser(req, res, next) {
+function newUser(email, username, jwt, res) {
     //req is where all of your params are.
     //Get the info you need by calling req.query.<what you're looking for>
-    //ex: password - req.query.password
-    var newUser = new user({'username': req.query.username, 'email': req.query.email,
-                            'password': req.query.password, 'first_name': req.query.first_name,
-                            'last_name': req.query.last_name, 'role': req.query.role,
-                            'skills': 'I have skills',
-                            'jwt': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2hhY2ttYW4tcHJvdG8uY29tIiwic3ViIjoibWFpbHRvOnQuam9obnNvbkBzdXBlcmJhZGFzc2FuZGNvb2wuY29tIiwibmJmIjoxNDc1MjcwMzMzLCJleHAiOjE1MDY4MDYzMzMsImlhdCI6MTQ3NTI3MDMzMywianRpIjoiaWQ4Njc1MzA5IiwidHlwIjoiaHR0cHM6Ly9oYWNrbWFuLXByb3RvLmNvbS9wcm90byJ9.rRVkZW7k2Ph6i5NaM7PUyN2i0XtVOV-sYpcmwkfJ21E'});
+    //ex: password - req.qeury.password
+    //res.json('making a new user');
+    //We're going to be setting the username as the nickname for auth0, and get the email and such from the profile
+    //A user is given admin permissions by someone who is already an admin
+    //The profile can be updated later.
+    var newUser = new Users({'username': username, 'email': email,
+                            'first_name': "", 'last_name': "",
+                            'role': "user", 'skills': "",
+                            'jwt': jwt});
     newUser.save(function(err) {
         if (err) return handleError(err);
         console.log("Saved user!");
     }).then(function() {
-        res.send(newUser);
+        res.json({
+            'username': newUser.username,
+            'email': newUser.email,
+            'first_name': newUser.first_name,
+            'last_name': newUser.last_name,
+            'role': newUser.role,
+            'skills': newUser.skills
+        })
     })
 }
 
@@ -95,5 +127,7 @@ router.get('/login', getUser);
 router.post('/modify', jsonParser, modifyUser);
 router.post('/signup', newUser);
 router.get('/hi', sayHi);
+//just checking login functionality
+router.post('/check', auth);
 
 module.exports = router;
