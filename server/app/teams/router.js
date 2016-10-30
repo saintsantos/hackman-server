@@ -40,26 +40,42 @@ function modifyTeam(req, res, next) {
 
   var new_name = req.query.teamname
   , new_desc = req.query.proj_desc
-  , adding_member = req.query.add,
-    del_member = req.query.del,
-    o_name = {teamname: req.query.original_name};
-  //how this mess works: when doing an if statement involving items in req.querys
-  //they will take the if path only if they contain something, regardless of value
-  //which is wonderful and terrible at the same time as that means unless otherwise
-  //noted, these messy if statements will do
+  , adding_member = req.query.add
+  , del_member = req.query.del
+  , o_name = {teamname: req.query.original_name};
 
-  if(new_desc){team.findOneAndUpdate(o_name,{proj_desc: req.query.proj_desc},function(err,upd){
+
+  //flow: checks to see if we're adding or removing a member, sets up the appropriate
+  // JSON object and hands it off to findOneAndUpdate
+
+  if(adding_member){var member_to_tweak = {$addToSet: {teammates: req.query.member}};}
+  if(del_member){var member_to_tweak = {$pull: {teammates: req.query.member}};}
+
+  if(adding_member || del_member){team.findOneAndUpdate(o_name,member_to_tweak,function(err,upd){
     if(err) return handleError(err);
   });}
-  if(adding_member){team.findOneAndUpdate(o_name,{$addToSet: {teammates: req.query.member}},function(err,upd){
+
+  //takes care of the not teammate based data
+  //eventually, I'd like to learn how to edit document arrays in findOne so I can
+  //further reduce database calls down to one
+
+  team.findOne(o_name,function(err,doc){
     if(err) return handleError(err);
-  });}
-  if(del_member){team.findOneAndUpdate(o_name,{$pull: {teammates: req.query.member}},function(err,upd){
+
+    //this will stop the function from trying to modify a null "doc"
+    if(doc){
+      if(new_name){doc.teamname = req.query.teamname}
+      if(new_desc){doc.proj_desc = req.query.proj_desc}
+      doc.save();
+    }
+  });
+
+  /*if(new_desc){team.findOneAndUpdate(o_name,{proj_desc: req.query.proj_desc},function(err,upd){
     if(err) return handleError(err);
   });}
   if(new_name){team.findOneAndUpdate(o_name,{teamname: req.query.teamname},function(err,upd){
     if(err) return handleError(err);
-  });}
+  });}*/
   res.send({status: "updated!"});
 }
 

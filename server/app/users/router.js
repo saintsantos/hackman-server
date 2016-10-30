@@ -50,41 +50,35 @@ function modifyUser(req, res, next) {
   add_skill = req.query.add_s,
   del_skill = req.query.del_s,
   new_skills = req.query.skills;
-  //how this mess works: when doing an if statement involving items in req.querys
-  //they will take the if path only if they contain something, regardless of value
-  //which is wonderful and terrible at the same time as that means unless otherwise
-  //noted, these messy if statements will do
 
-  if(new_name){user.findOneAndUpdate(o_name,{username: req.query.username},function(err,upd){
+  //flow: add/remove roles and skills, then fall into third findOne and fix the rest
+
+  if(add_role){var role_to_modify = {$addToSet: {role: req.query.role}};}
+  if(del_role){var role_to_modify = {$pull: {role: req.query.role}};}
+  if(add_skill){var skill_to_modify = {$addToSet: {skills: req.query.skills}};}
+  if(del_skill){var skill_to_modify = {$pull: {skills: req.query.skills}};}
+
+  if(add_role || del_role){user.findOneAndUpdate(o_name,role_to_modify,function(err,upd){
     if(err) return handleError(err);
   });}
-  if(new_pass){user.findOneAndUpdate(o_name,{password: req.query.password},function(err,upd){
+  if(add_skill || del_skill){user.findOneAndUpdate(o_name,skill_to_modify,function(err,upd){
     if(err) return handleError(err);
   });}
-  if(new_jwt){user.findOneAndUpdate(o_name,{jwt: req.query.jwt},function(err,upd){
+
+  user.findOne(o_name,function(err,doc){
     if(err) return handleError(err);
-  });}
-  if(new_email){user.findOneAndUpdate(o_name,{email: req.query.email},function(err,upd){
-    if(err) return handleError(err);
-  });}
-  if(new_first){user.findOneAndUpdate(o_name,{first_name: req.query.first_name},function(err,upd){
-    if(err) return handleError(err);
-  });}
-  if(new_last){user.findOneAndUpdate(o_name,{last_name: req.query.last_name},function(err,upd){
-    if(err) return handleError(err);
-  });}
-  if(add_role){user.findOneAndUpdate(o_name,{$addToSet: {role: req.query.role}},function(err,upd){
-    if(err) return handleError(err);
-  });}
-  if(del_role){user.findOneAndUpdate(o_name,{$pull: {role: req.query.role}},function(err,upd){
-    if(err) return handleError(err);
-  });}
-  if(add_skill){user.findOneAndUpdate(o_name,{$addToSet: {skills: req.query.skills}},function(err,upd){
-    if(err) return handleError(err);
-  });}
-  if(del_skill){user.findOneAndUpdate(o_name,{$pull: {skills: req.query.skills}},function(err,upd){
-    if(err) return handleError(err);
-  });}
+
+    //this will stop the function from trying to modify a null "doc"
+    if(doc){
+      if(new_name){doc.username = req.query.username}
+      if(new_pass){doc.password = req.query.password}
+      if(new_jwt){doc.jwt = req.query.jwt}
+      if(new_email){doc.email = req.query.email}
+      if(new_first){doc.first_name = req.query.first_last}
+      if(new_last){doc.last_name = req.query.last_name}
+      doc.save();
+    }
+  });
   res.send({status: "updated!"});
 }
 
