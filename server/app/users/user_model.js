@@ -5,8 +5,9 @@ var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
     username: String,
-    password: String,
+    email: String,
     jwt: String,
+    email: String,
     first_name: String,
     last_name: String,
     role: String,
@@ -14,8 +15,5 @@ var userSchema = new Schema({
 });
 userSchema.set('toObject', {getters: true});
 var userModel = mongoose.model('user', userSchema);
-
 module.exports = userModel;
-//var collection = db.get()
-
-//var collection = db.get().collection('users');
+//For the time being these will be strings. Will fix very soon.
