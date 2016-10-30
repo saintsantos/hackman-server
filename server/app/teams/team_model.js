@@ -6,7 +6,8 @@ var Schema = mongoose.Schema;
 var teamSchema = new Schema({
     teamname: String,
     created_by: String,
-    proj_desc: String
+    proj_desc: String,
+    teammates: []
 }, {collection: 'teams'});
 
 teamSchema.set('toObject', { getters : true});
