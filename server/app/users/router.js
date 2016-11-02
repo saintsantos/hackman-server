@@ -70,7 +70,28 @@ function modifyUser(req, res, next) {
   //may be a good idea to switch to unique IDs as this will update all
   //collections matching the given criteria
 
-  var o_name ={username: req.query.orig_name},
+  Users.findOne({'jwt': req.get('token')}, function(err, user) {
+      if (err) return handleError(err);
+      if (!user) {
+          res.send("user not found");
+      } else {
+          Users.findByIdAndUpdate({'_id': user._id}, {$set: {'username': req.query.username, 'email': req.query.email,
+                                                            'first_name': req.query.first_name, 'last_name': req.query.last_name,
+                                                            'skills': req.query.skills}}, function(err, user) {
+                                                                res.json({
+                                                                    'username': user.username,
+                                                                    'email': user.email,
+                                                                    'first_name': user.first_name,
+                                                                    'last_name': user.last_name,
+                                                                    'skills': user.skills
+                                                                });
+
+        });
+      }
+
+  })
+
+  /*var o_name ={username: req.query.orig_name},
   new_name = req.query.username,
   new_pass = req.query.password,
   new_jwt = req.query.jwt,
@@ -110,9 +131,13 @@ function modifyUser(req, res, next) {
       if(new_first){doc.first_name = req.query.first_last}
       if(new_last){doc.last_name = req.query.last_name}
       doc.save();
-    }
-  });
-  res.send({status: "updated!"});
+      }
+  });*/
+}
+
+function deleteUser(req, res, next) {
+    Users.find({'jwt': req.get('token')}).remove().exec();
+    res.send("deleted!");
 }
 
 function sayHi(req, res, next) {
@@ -124,10 +149,11 @@ function sayHi(req, res, next) {
 //Just a test code for our endpoint
 router.get('/login', getUser);
 
-router.post('/modify', jsonParser, modifyUser);
-router.post('/signup', newUser);
+router.post('/', modifyUser);
+//leave this fool in for now to test our api for stuff
 router.get('/hi', sayHi);
-//just checking login functionality
+router.delete('/', deleteUser);
+//just checking login functionality, will be updated at a later point to enhance security.
 router.post('/check', auth);
 
 module.exports = router;

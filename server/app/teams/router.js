@@ -79,11 +79,32 @@ function modifyTeam(req, res, next) {
   res.send({status: "updated!"});
 }
 
+function getAllTeams(req, res, next) {
+    team.find(function(err, teams) {
+        console.log(teams);
+    });
+}
+
+function getTeamName(req, res, next) {
+    console.log(req.params);
+}
+
+function addTeammate(req, res, next) {
+    console.log(req.params.name);
+}
+
+function removeTeammate(req, res, next) {
+    console.log(req.params.username);
+}
 
 
-router.get('/', getTeam);
-router.post('/', newTeam);
-router.post('/modify/', modifyTeam) //better handling for modifying themes
-router.delete('/', deleteTeam);
+
+router.get('/', getAllTeams);
+router.get('/:name', getTeamName);
+router.post('/:name', newTeam);
+router.post('/:name/modify/', modifyTeam) //better handling for modifying themes
+router.post('/:name/modify/:username', addTeammate) //handle adding teammates
+router.delete('/:name/modify/:username', removeTeammate)
+router.delete('/:name', deleteTeam);
 
 module.exports = router;
