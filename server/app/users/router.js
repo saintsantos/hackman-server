@@ -69,6 +69,9 @@ function modifyUser(req, res, next) {
   //ask ed how req works, see what we can pass into it
   //may be a good idea to switch to unique IDs as this will update all
   //collections matching the given criteria
+  //This will accept the post from the profile page. It will send the entire user object,
+  //regardless of what updates. It's easier to update the entire user object than to hunt,
+  //for each element that changes.
 
   Users.findOne({'jwt': req.get('token')}, function(err, user) {
       if (err) return handleError(err);
