@@ -79,8 +79,8 @@ function modifyUser(req, res, next) {
           res.send("user not found");
       } else {
           Users.findByIdAndUpdate({'_id': user._id}, {$set: {'username': req.query.username, 'email': req.query.email,
-                                                            'first_name': req.query.first_name, 'last_name': req.query.last_name,
-                                                            'skills': req.query.skills}}, function(err, user) {
+                                                            'first_name': req.query.first_name, 'last_name': req.query.last_name
+                                                          }}, function(err, user) {
                                                                 res.json({
                                                                     'username': user.username,
                                                                     'email': user.email,
@@ -136,6 +136,24 @@ function modifyUser(req, res, next) {
       doc.save();
       }
   });*/
+}
+
+function setSkills(req, res, next) {
+
+  Users.findOne({'jwt': req.get('token')}, function(err, user) {
+      if (err) return handleError(err);
+      if (!user) {
+          res.send("user not found");
+      } else {
+          Users.findByIdAndUpdate({'_id': user._id}, {$set: {'skills': req.query.skills}}, function(err, user) {
+                                                                res.json({
+                                                                  'skills': user.skills
+                                                                });
+
+        });
+      }
+
+  })
 }
 
 function deleteUser(req, res, next) {
