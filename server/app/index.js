@@ -18,6 +18,7 @@ app.use(require('app/util/cors'));
 //API endpoints
 app.use('/api/user', require('app/users/router'));
 app.use('/api/teams', require('app/teams/router'));
+app.use('/api/admin', require('app/admin/router'));
 
 
 app.use(function(req, res, next) {

@@ -26,12 +26,14 @@ function getUser(req, res, next) {
             Users.findByIdAndUpdate({_id: id}, { $set: {'jwt': jwt}}, function(err, user) {
                 //After we find our user, strip the jwt out of the response and send the profile up to the client
                 res.json({
+                    'id': user._id,
                     'username': user.username,
                     'email': user.email,
                     'first_name': user.first_name,
                     'last_name': user.last_name,
                     'role': user.role,
-                    'skills': user.skills
+                    'skills': user.skills,
+                    'events': user.events
                 })
             });
         }
