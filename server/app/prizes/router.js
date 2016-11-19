@@ -11,7 +11,7 @@ var express = require('express'),
 
 function getPrizes(req, res, next) {
     //Need to filter this for specific events
-    prizes.find(function(err, teams) {
+    prizes .find(function(err, teams) {
         res.send(teams);
     });
 }
