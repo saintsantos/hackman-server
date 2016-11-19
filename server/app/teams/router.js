@@ -53,7 +53,7 @@ function deleteTeam(req, res, next) {
   });
 }
 
-function modifyTeam(req, res, next) {
+function modifyTeamOld(req, res, next) {
   //ask ed how req works, see what we can pass into it
   //may be a good idea to switch to unique IDs as this will update all
   //collections matching the given criteria
@@ -99,6 +99,13 @@ function modifyTeam(req, res, next) {
   res.send({status: "updated!"});
 }
 
+function modifyTeam(req, res, next) {
+    team.findByIdAndUpdate({_id: req.params.id}, { $set: {'teamname': req.query.teamname, 'proj_desc': req.query.proj_desc, 'status': req.query.status, 'location': req.query.location}}, function(err, team) {
+        res.send("Updated!");
+    });
+}
+
+
 function getAllTeams(req, res, next) {
     team.find(function(err, teams) {
         res.send(teams);
@@ -127,7 +134,7 @@ function removeTeammate(req, res, next) {
 router.get('/', getAllTeams);
 router.get('/:id', getTeamName);
 router.post('/:name', newTeam); //create a new team with this name
-router.post('/:id/modify/', modifyTeam); //better handling for modifying teams
+router.put('/:id/modify/', modifyTeam); //better handling for modifying teams
 router.post('/:id/modify/:username', addTeammate); //handle adding teammates
 router.delete('/:id/modify/:username', removeTeammate);
 router.delete('/:id', deleteTeam);
