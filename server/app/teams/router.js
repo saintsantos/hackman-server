@@ -15,6 +15,9 @@ function getTeamName(req, res, next) {
 
 function newTeam(req, res, next) {
     //only needs a project description to be sent via request for the teams to be formed.
+    console.log("received request");
+    console.log(req.params)
+    console.log(req.query)
     var teamName = req.params.name;
     users.findOne({'jwt': req.get('token')}, function(err, user) {
         if (err) return handleError(err);
@@ -42,7 +45,7 @@ function newTeam(req, res, next) {
 }
 
 function deleteTeam(req, res, next) {
-  var del_team = team.findOne({'teamname': req.params.teamname}, function(err, rem_team) {
+  var del_team = team.findOne({'_id': req.params.teamname}, function(err, rem_team) {
       if (err) return handleError(err);});
   del_team.remove().exec();
   res.send({
