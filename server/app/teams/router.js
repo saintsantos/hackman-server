@@ -113,20 +113,17 @@ function getAllTeams(req, res, next) {
 }
 
 function addTeammate(req, res, next) {
-    team.findOne({'_id': req.params.id}, function(err, team) {
-        if (err) return handleError(err);
-        if (!team) {
-            res.send("error. no team found");
-        }
+    console.log(req.params);
+    team.findByIdAndUpdate({'_id': req.params.id}, {$addToSet: {'teammates': req.params.username}}, function(err, team) {
         res.send(team);
-    })
-
-
-    console.log(req.params.name);
+    });
 }
 
 function removeTeammate(req, res, next) {
-    console.log(req.params.username);
+    console.log(req.params);
+    team.findByIdAndUpdate({'_id': req.params.id}, {$pull: {'teammates': req.params.username}}, function(err, team) {
+        res.send(team);
+    });
 }
 
 
