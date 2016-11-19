@@ -19,3 +19,6 @@ function getPrizes(req, res, next) {
 
 //Get all of the prizes for the event.
 router.get('/prize/', getPrizes);
+
+
+module.exports = router;

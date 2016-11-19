@@ -1,4 +1,4 @@
-/express stuff
+//express stuff
 var express = require('express'),
     router = express.Router(),
     app = express(),
@@ -6,7 +6,7 @@ var express = require('express'),
     jsonParser = require('app/util/body-parse').json,
     auth = require('app/util/auth'),
 
-    Users = require('app/user/user_model');
+    Users = require('app/users/user_model');
 
 
 
@@ -23,11 +23,11 @@ function makeAdmin(req, res, next) {
     });
 }
 
-function editPrizes(req, res, next) {
+function editPrize(req, res, next) {
 
 }
 
-function editSponsors(req, res, next) {
+function editSponsor(req, res, next) {
 
 }
 
@@ -51,9 +51,10 @@ function removePrize(req, res, next) {
 router.post('/add', makeAdmin);
 //Sponsor endpoints
 router.post('/sponsor/:name', addSponsor);
-router.delete('/sponsor/:name', removeSponsors);
-router.put('/sponsor/:name', editSponsors);
+router.delete('/sponsor/:name', removeSponsor);
+router.put('/sponsor/:name', editSponsor);
 //Prizes endpoints
 router.post('/prize/:name', addPrize);
 router.delete('/prize/:name', removePrize);
 router.put('/prize/:name', editPrize);
+module.exports = router;

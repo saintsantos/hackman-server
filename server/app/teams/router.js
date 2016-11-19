@@ -4,7 +4,7 @@ var express = require('express'),
     app = express(),
 
     team = require('./team_model'),
-    users = require('../users/user_model');
+    users = require('app/users/user_model');
 
 function getTeamName(req, res, next) {
     team.findOne({'teamname': req.params.name}, function(err, team) {
@@ -25,6 +25,8 @@ function newTeam(req, res, next) {
             var newTeam = new team({'teamname': teamName,
                                     'created_by': user._id,
                                     'proj_desc': req.query.proj_desc,
+                                    'status': req.query.status,
+                                    'location': req.query.location,
                                     'teammates': [user.username]} );
             newTeam.save( function(err) {
                 if (err) {
@@ -101,6 +103,15 @@ function getAllTeams(req, res, next) {
 }
 
 function addTeammate(req, res, next) {
+    team.findOne({'_id': req.params.id}, function(err, team) {
+        if (err) return handleError(err);
+        if (!team) {
+            res.send("error. no team found");
+        }
+        res.send(team);
+    })
+
+
     console.log(req.params.name);
 }
 
@@ -111,11 +122,11 @@ function removeTeammate(req, res, next) {
 
 
 router.get('/', getAllTeams);
-router.get('/:name', getTeamName);
-router.post('/:name', newTeam);
-router.post('/:name/modify/', modifyTeam) //better handling for modifying teams
-router.post('/:name/modify/:username', addTeammate) //handle adding teammates
-router.delete('/:name/modify/:username', removeTeammate)
-router.delete('/:name', deleteTeam);
+router.get('/:id', getTeamName);
+router.post('/:name', newTeam); //create a new team with this name
+router.post('/:id/modify/', modifyTeam); //better handling for modifying teams
+router.post('/:id/modify/:username', addTeammate); //handle adding teammates
+router.delete('/:id/modify/:username', removeTeammate);
+router.delete('/:id', deleteTeam);
 
 module.exports = router;
