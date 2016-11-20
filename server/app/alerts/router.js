@@ -17,5 +17,5 @@ function getAlerts(req, res, next) {
 
 
 //Get all of the prizes for the event.
-router.get('/prize/', getAlerts);
+router.get('/', getAlerts);
 module.exports = router;

@@ -26,6 +26,9 @@ function makeAdmin(req, res, next) {
 }
 
 function editPrize(req, res, next) {
+    prizes.findByIdAndUpdate({_id: req.params.id}, { $set: {'prizeName': req.query.teamname, 'prize_desc': req.query.proj_desc, 'sponsor': req.query.status}}, function(err, team) {
+        res.send("Updated!");
+    });
 
 }
 
@@ -69,6 +72,10 @@ function removeSponsor(req, res, next) {
 }
 
 function removePrize(req, res, next) {
+    //Passing in the id of the prize we want to remove
+    prizes.findByIdAndRemove({_id: req.params.id}, function(err, removedPrize) {
+        if (err) return handleError(err);
+    });
 
 }
 
