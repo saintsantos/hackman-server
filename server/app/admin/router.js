@@ -5,6 +5,8 @@ var express = require('express'),
 
     jsonParser = require('app/util/body-parse').json,
     auth = require('app/util/auth'),
+    prizes = require('app/prizes/prizes_model'),
+    sponsors = require('app/sponsors/sponsor_model'),
 
     Users = require('app/users/user_model');
 
@@ -32,10 +34,33 @@ function editSponsor(req, res, next) {
 }
 
 function addSponsor(req, res, next) {
+    var newSponsor = new sponsors({'sponsorName': req.params.name,
+                            'sponsor_desc': req.query.desc});
+    newSponsor.save( function(err) {
+        if (err) {
+            console.log(err);
+        }
+
+    }).then(function() {
+        console.log("Saved Sponsor!");
+        res.send(newSponsor);
+    });
 
 }
 
 function addPrize(req, res, next) {
+    var newPrize = new prizes({'prizeName': req.params.name,
+                            'prize_desc': req.query.desc,
+                            'sponsor': req.query.sponsor});
+    newPrize.save( function(err) {
+        if (err) {
+            console.log(err);
+        }
+
+    }).then(function() {
+        console.log("Saved Prize!");
+        res.send(newPrize);
+    });
 
 }
 
@@ -51,10 +76,10 @@ function removePrize(req, res, next) {
 router.post('/add', makeAdmin);
 //Sponsor endpoints
 router.post('/sponsor/:name', addSponsor);
-router.delete('/sponsor/:name', removeSponsor);
-router.put('/sponsor/:name', editSponsor);
+router.delete('/sponsor/:id', removeSponsor);
+router.put('/sponsor/:id', editSponsor);
 //Prizes endpoints
 router.post('/prize/:name', addPrize);
-router.delete('/prize/:name', removePrize);
-router.put('/prize/:name', editPrize);
+router.delete('/prize/:id', removePrize);
+router.put('/prize/:id', editPrize);
 module.exports = router;
