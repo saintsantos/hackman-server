@@ -7,6 +7,8 @@ var teamSchema = new Schema({
     teamname: String,
     created_by: String,
     proj_desc: String,
+    status: String,
+    location: String,
     teammates: []
 }, {collection: 'teams'});
 
