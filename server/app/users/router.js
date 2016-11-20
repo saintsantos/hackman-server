@@ -26,12 +26,14 @@ function getUser(req, res, next) {
             Users.findByIdAndUpdate({_id: id}, { $set: {'jwt': jwt}}, function(err, user) {
                 //After we find our user, strip the jwt out of the response and send the profile up to the client
                 res.json({
+                    'id': user._id,
                     'username': user.username,
                     'email': user.email,
                     'first_name': user.first_name,
                     'last_name': user.last_name,
                     'role': user.role,
-                    'skills': user.skills
+                    'skills': user.skills,
+                    'events': user.events
                 })
             });
         }
@@ -69,6 +71,9 @@ function modifyUser(req, res, next) {
   //ask ed how req works, see what we can pass into it
   //may be a good idea to switch to unique IDs as this will update all
   //collections matching the given criteria
+  //This will accept the post from the profile page. It will send the entire user object,
+  //regardless of what updates. It's easier to update the entire user object than to hunt,
+  //for each element that changes.
 
   Users.findOne({'jwt': req.get('token')}, function(err, user) {
       if (err) return handleError(err);
@@ -76,8 +81,8 @@ function modifyUser(req, res, next) {
           res.send("user not found");
       } else {
           Users.findByIdAndUpdate({'_id': user._id}, {$set: {'username': req.query.username, 'email': req.query.email,
-                                                            'first_name': req.query.first_name, 'last_name': req.query.last_name,
-                                                            'skills': req.query.skills}}, function(err, user) {
+                                                            'first_name': req.query.first_name, 'last_name': req.query.last_name
+                                                          }}, function(err, user) {
                                                                 res.json({
                                                                     'username': user.username,
                                                                     'email': user.email,
@@ -133,6 +138,24 @@ function modifyUser(req, res, next) {
       doc.save();
       }
   });*/
+}
+
+function setSkills(req, res, next) {
+
+  Users.findOne({'jwt': req.get('token')}, function(err, user) {
+      if (err) return handleError(err);
+      if (!user) {
+          res.send("user not found");
+      } else {
+          Users.findByIdAndUpdate({'_id': user._id}, {$set: {'skills': req.query.skills}}, function(err, user) {
+                                                                res.json({
+                                                                  'skills': user.skills
+                                                                });
+
+        });
+      }
+
+  })
 }
 
 function deleteUser(req, res, next) {
