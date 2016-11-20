@@ -6,8 +6,7 @@ var Schema = mongoose.Schema;
 var prizeSchema = new Schema({
     prizeName: String,
     prize_desc: String,
-    prize_rank: Integer,
-    event: String
+    sponsor: String
 }, {collection: 'prizes'});
 
 prizeSchema.set('toObject', { getters : true});
