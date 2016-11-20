@@ -45,12 +45,9 @@ function newTeam(req, res, next) {
 }
 
 function deleteTeam(req, res, next) {
-  var del_team = team.findOne({'_id': req.params.teamname}, function(err, rem_team) {
-      if (err) return handleError(err);});
-  del_team.remove().exec();
-  res.send({
-    status: 'Team Removed'
-  });
+    team.findByIdAndRemove({_id: req.params.id}, function(err, removedTeam) {
+        if (err) return handleError(err);
+    });
 }
 
 function modifyTeamOld(req, res, next) {
