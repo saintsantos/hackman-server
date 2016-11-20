@@ -26,24 +26,39 @@ function makeAdmin(req, res, next) {
 }
 
 function editPrize(req, res, next) {
+    prizes.findByIdAndUpdate({_id: req.params.id}, { $set: {'prizeName': req.query.teamname, 'prize': req.query.proj_desc, 'status': req.query.status, 'location': req.query.location}}, function(err, team) {
+        res.send("Updated!");
+    });
 
 }
 
 function editSponsor(req, res, next) {
-
+    sponsors.findByIdAndUpdate({'sponsorName': req.params.sponsorName}, { $set: {'sponsorName': req.query.newname, 'sponsor_desc': req.query.sponsor_desc}}, function(err, team) {
+        res.send(team);
+    });
 }
 
 function addSponsor(req, res, next) {
-    var newSponsor = new sponsors({'sponsorName': req.params.name,
-                            'sponsor_desc': req.query.desc});
-    newSponsor.save( function(err) {
-        if (err) {
-            console.log(err);
+    console.log("received request");
+    console.log(req.params)
+    console.log(req.query)
+    sponsors.findOne({'sponsorName': req.params.sponsorName}, function(err, sponsor) {
+        if (err) return handleError(err);
+        if (!sponsor) {
+            //add sponsor
+            var newSponsor = new sponsors({'sponsorName':  req.params.sponsorName,
+                                            'sponsor_desc': req.query.sponsor_desc});
+            newSponsor.save( function(err) {
+                if (err) {
+                    console.log(err);
+                }
+                console.log("Saved Sponsor!");
+            }).then(function() {
+                res.send(newSponsor);
+            });
+        } else {
+            res.send("Sponsor Already Exists");
         }
-
-    }).then(function() {
-        console.log("Saved Sponsor!");
-        res.send(newSponsor);
     });
 
 }
@@ -65,10 +80,17 @@ function addPrize(req, res, next) {
 }
 
 function removeSponsor(req, res, next) {
+    sponsors.findByIdAndRemove({'sponsorName': req.params.sponsorName}, function(err, removedSponsor) {
+        if (err) return handleError(err);
+    });
 
 }
 
 function removePrize(req, res, next) {
+    //Passing in the id of the prize we want to remove
+    prizes.findByIdAndRemove({_id: req.params.id}, function(err, removedPrize) {
+        if (err) return handleError(err);
+    });
 
 }
 
