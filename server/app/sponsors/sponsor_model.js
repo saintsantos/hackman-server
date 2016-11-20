@@ -5,8 +5,7 @@ var Schema = mongoose.Schema;
 
 var sponsorSchema = new Schema({
     sponsorName: String,
-    sponsor_desc: String,
-    event: String
+    sponsor_desc: String
 }, {collection: 'sponsors'});
 
 sponsorSchema.set('toObject', { getters : true});

@@ -21,7 +21,7 @@ app.use('/api/teams', require('app/teams/router'));
 app.use('/api/admin', require('app/admin/router'));
 app.use('/api/alerts', require('app/alerts/router'));
 app.use('/api/sponsors', require('app/sponsors/router'));
-app.use('/api/prizes', require('/app/prizes/router'));
+app.use('/api/prizes', require('app/prizes/router'));
 
 
 app.use(function(req, res, next) {
