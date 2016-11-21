@@ -3,37 +3,54 @@ var express = require('express'),
     router = express.Router(),
     app = express(),
 
-    team = require('./team_model');
+    team = require('./team_model'),
+    users = require('app/users/user_model');
 
-function getTeam(req, res, next) {
-    team.findOne({'teamname': req.query.teamname}, function(err, team) {
+function getTeamName(req, res, next) {
+    team.findOne({'teamname': req.params.name}, function(err, team) {
         if (err) return handleError(err);
-        res.json(team);
+        res.send(team);
     });
 }
 
 function newTeam(req, res, next) {
-    var newTeam = new team({'teamname': req.query.teamname,
-                            'created_by': req.query.created_by,
-                            'proj_desc': req.query.proj_desc });
-    newTeam.save(function(err) {
+    //only needs a project description to be sent via request for the teams to be formed.
+    console.log("received request");
+    console.log(req.params)
+    console.log(req.query)
+    var teamName = req.params.name;
+    users.findOne({'jwt': req.get('token')}, function(err, user) {
         if (err) return handleError(err);
-        console.log("Saved Team!");
-    }).then(function() {
-        res.send(newTeam);
+        if (!user) {
+            res.send("No user found");
+        } else {
+            console.log(req.params);
+            var newTeam = new team({'teamname': teamName,
+                                    'created_by': user._id,
+                                    'proj_desc': req.query.proj_desc,
+                                    'status': req.query.status,
+                                    'location': req.query.location,
+                                    'teammates': [user.username]} );
+            newTeam.save( function(err) {
+                if (err) {
+                    console.log(err);
+                }
+                console.log("Saved Team!");
+            }).then(function() {
+                res.send(newTeam);
+            });
+        }
     });
+
 }
 
 function deleteTeam(req, res, next) {
-  var del_team = team.findOne({'teamname': req.params.teamname}, function(err, rem_team) {
-      if (err) return handleError(err);});
-  del_team.remove().exec();
-  res.send({
-    status: 'Team Removed'
-  });
+    team.findByIdAndRemove({_id: req.params.id}, function(err, removedTeam) {
+        if (err) return handleError(err);
+    });
 }
 
-function modifyTeam(req, res, next) {
+function modifyTeamOld(req, res, next) {
   //ask ed how req works, see what we can pass into it
   //may be a good idea to switch to unique IDs as this will update all
   //collections matching the given criteria
@@ -79,11 +96,41 @@ function modifyTeam(req, res, next) {
   res.send({status: "updated!"});
 }
 
+function modifyTeam(req, res, next) {
+    team.findByIdAndUpdate({_id: req.params.id}, { $set: {'teamname': req.query.teamname, 'proj_desc': req.query.proj_desc, 'status': req.query.status, 'location': req.query.location}}, function(err, team) {
+        res.send("Updated!");
+    });
+}
 
 
-router.get('/', getTeam);
-router.post('/', newTeam);
-router.post('/modify/', modifyTeam) //better handling for modifying themes
-router.delete('/', deleteTeam);
+function getAllTeams(req, res, next) {
+    team.find(function(err, teams) {
+        res.send(teams);
+    });
+}
+
+function addTeammate(req, res, next) {
+    console.log(req.params);
+    team.findByIdAndUpdate({'_id': req.params.id}, {$addToSet: {'teammates': req.params.username}}, function(err, team) {
+        res.send(team);
+    });
+}
+
+function removeTeammate(req, res, next) {
+    console.log(req.params);
+    team.findByIdAndUpdate({'_id': req.params.id}, {$pull: {'teammates': req.params.username}}, function(err, team) {
+        res.send(team);
+    });
+}
+
+
+
+router.get('/', getAllTeams);
+router.get('/:id', getTeamName);
+router.post('/:name', newTeam); //create a new team with this name
+router.put('/:id/modify/', modifyTeam); //better handling for modifying teams
+router.post('/:id/modify/:username', addTeammate); //handle adding teammates
+router.delete('/:id/modify/:username', removeTeammate);
+router.delete('/:id', deleteTeam);
 
 module.exports = router;

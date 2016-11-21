@@ -5,20 +5,17 @@ var express = require('express'),
 
     jsonParser = require('app/util/body-parse').json,
     auth = require('app/util/auth'),
-    prizes = require('./prizes_model');
+    alerts = require('./alerts_model');
 
-//Need to add event info here to filter prizes
 
-function getPrizes(req, res, next) {
+function getAlerts(req, res, next) {
     //Need to filter this for specific events
-    prizes.find(function(err, teams) {
-        res.send(teams);
+    alerts.find(function(err, alerts) {
+        res.send(alerts);
     });
 }
 
 
 //Get all of the prizes for the event.
-router.get('/', getPrizes);
-
-
+router.get('/', getAlerts);
 module.exports = router;

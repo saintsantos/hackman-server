@@ -7,12 +7,11 @@ var teamSchema = new Schema({
     teamname: String,
     created_by: String,
     proj_desc: String,
+    status: String,
+    location: String,
     teammates: []
 }, {collection: 'teams'});
 
 teamSchema.set('toObject', { getters : true});
 var teamModel = mongoose.model('Team', teamSchema);
 module.exports = teamModel;
-//var collection = db.get()
-
-//var collection = db.get().collection('users');

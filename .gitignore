@@ -1,3 +1,4 @@
 server/node_modules/
 database/node_modules/
 server/config.env
+npm-debug.log
