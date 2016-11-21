@@ -16,7 +16,10 @@ function getSponsors(req, res, next) {
 
 }
 
+
+
+
 //Get all of the sponsors for an ebent
-router.get('/sponsors/', getSponsors);
+router.get('/', getSponsors);
 
 module.exports = router;
