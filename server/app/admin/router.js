@@ -7,6 +7,7 @@ var express = require('express'),
     auth = require('app/util/auth'),
     prizes = require('app/prizes/prizes_model'),
     sponsors = require('app/sponsors/sponsor_model'),
+    alerts = require('app/alerts/alerts_model'),
 
     Users = require('app/users/user_model');
 
@@ -26,7 +27,7 @@ function makeAdmin(req, res, next) {
 }
 
 function editPrize(req, res, next) {
-    prizes.findByIdAndUpdate({_id: req.params.id}, { $set: {'prizeName': req.query.teamname, 'prize_desc': req.query.proj_desc, 'sponsor': req.query.status}}, function(err, team) {
+    prizes.findByIdAndUpdate({_id: req.params.id}, { $set: {'prizeName': req.query.prizeName, 'prize_desc': req.query.prize_desc, 'sponsor': req.query.sponsor}}, function(err, team) {
         res.send("Updated!");
     });
 
@@ -53,7 +54,7 @@ function addSponsor(req, res, next) {
 
 function addPrize(req, res, next) {
     var newPrize = new prizes({'prizeName': req.params.name,
-                            'prize_desc': req.query.desc,
+                            'prize_desc': req.query.prize_desc,
                             'sponsor': req.query.sponsor});
     newPrize.save( function(err) {
         if (err) {
@@ -79,6 +80,28 @@ function removePrize(req, res, next) {
 
 }
 
+function addAlert(req, res, next) {
+    var newAlert = new alerts({'timeStamp': new Date(),
+                            'text': req.query.text});
+    newAlert.save( function(err) {
+        if (err) {
+            console.log(err);
+        }
+
+    }).then(function() {
+        console.log("Saved Alert!");
+        res.send(newAlert);
+    });
+}
+
+function deleteAlert(req, res, next) {
+
+}
+
+function editAlert(req, res, next) {
+
+}
+
 //Admin add endpoint
 router.post('/add', makeAdmin);
 //Sponsor endpoints
@@ -89,4 +112,8 @@ router.put('/sponsor/:id', editSponsor);
 router.post('/prize/:name', addPrize);
 router.delete('/prize/:id', removePrize);
 router.put('/prize/:id', editPrize);
+//Alerts endpoints
+router.post('/alert/add', addAlert);
+router.put('/alert/:id', editAlert);
+router.delete('/alert/:id', deleteAlert);
 module.exports = router;

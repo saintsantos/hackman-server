@@ -10,7 +10,7 @@ var express = require('express'),
 
 function getAlerts(req, res, next) {
     //Need to filter this for specific events
-    alerts.find(function(err, teams) {
+    alerts.find(function(err, alerts) {
         res.send(alerts);
     });
 }
