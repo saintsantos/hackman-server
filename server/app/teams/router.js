@@ -105,6 +105,9 @@ function modifyTeam(req, res, next) {
 
 function getAllTeams(req, res, next) {
     team.find(function(err, teams) {
+        teams.forEach( function(s) {
+            console.log(s.teamname);
+        })
         res.send(teams);
     });
 }

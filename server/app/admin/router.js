@@ -14,15 +14,14 @@ var express = require('express'),
 
 
 function makeAdmin(req, res, next) {
-    Users.findOne({'username': req.query.username}, function(err, user) {
-        if (err) return handleError(err);
-        if (!user) {
-            res.send("User not found");
-        } else {
-            id = user._id;
-            console.log('id: ' + id);
-            Users.findByIdAndUpdate({_id: id}, { $set: {'role': 'admin'}});
-        }
+    Users.findByIdAndUpdate({_id: id}, { $set: {'role': 'admin'}}, function(err, user) {
+        res.send("Admin added!");
+    });
+}
+
+function removeAdmin(req, res, next) {
+    Users.findByIdAndUpdate({_id: id}, { $set: {'role': 'user'}}, function(err, user) {
+        res.send("Admin removed!");
     });
 }
 
@@ -107,7 +106,8 @@ function editAlert(req, res, next) {
 }
 
 //Admin add endpoint
-router.post('/add', makeAdmin);
+router.post('/', makeAdmin);
+router.delete('/', removeAdmin);
 //Sponsor endpoints
 router.post('/sponsor/:name', addSponsor);
 router.delete('/sponsor/:id', removeSponsor);

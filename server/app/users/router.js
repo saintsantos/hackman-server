@@ -9,13 +9,13 @@ var express = require('express'),
     Users = require('./user_model');
 
 
-function getUser(req, res, next) {
+function loginUser(req, res, next) {
     //console.log(req.query);
     //Don't have to handle an improper login for our application. Aith0 let's us do this properly
     jwt = req.get('token');
     email = req.query.email;
     username = req.query.username;
-    console.log(req.query);
+    console.log("Query: ", req.query);
     Users.findOne({'username': req.query.username, 'email': req.query.email}, function(err, user) {
         if (err) return handleError(err);
         if (!user) {
@@ -48,6 +48,9 @@ function newUser(email, username, jwt, res) {
     //We're going to be setting the username as the nickname for auth0, and get the email and such from the profile
     //A user is given admin permissions by someone who is already an admin
     //The profile can be updated later.
+    console.log("making a new user");
+	console.log("email: ", email);
+	console.log("Username: ", username);
     var newUser = new Users({'username': username, 'email': email,
                             'first_name': "", 'last_name': "",
                             'role': "user", 'skills': "",
@@ -158,6 +161,26 @@ function setSkills(req, res, next) {
   })
 }
 
+function getUser(req, res, next) {
+    Users.findOne({'jwt': req.get('token')}, function(err, user) {
+        if (err) return handleError(err);
+        if (!user) {
+            res.send("user not found");
+        } else {
+            res.json({
+                '_id': user._id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'role': user.role,
+                'skills': user.skills,
+                'events': user.events
+            })
+          }
+      });
+}
+
 function deleteUser(req, res, next) {
     Users.find({'jwt': req.get('token')}).remove().exec();
     res.send("deleted!");
@@ -170,9 +193,11 @@ function sayHi(req, res, next) {
 }
 
 //Just a test code for our endpoint
-router.get('/login', getUser);
+router.get('/login', loginUser);
 
-router.post('/', modifyUser);
+router.get('/', getUser);
+
+router.post('/:id', modifyUser);
 //leave this fool in for now to test our api for stuff
 router.get('/hi', sayHi);
 router.delete('/', deleteUser);
