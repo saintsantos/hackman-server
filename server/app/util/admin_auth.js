@@ -7,9 +7,14 @@ function auth(req, res, next) {
         user.findOne({'jwt': req.get('token')}, function(err, user) {
             if (err) return handleError(err);
             if (!user) {
+                console.log("user not found");
                 res.status(401).send("Unauthorized");
             } else {
-                return next();
+                if(user.role != 'admin') {
+                    res.status(401).send("Unauthorized");
+                } else {
+                    return next();
+                }
             }
         });
     }

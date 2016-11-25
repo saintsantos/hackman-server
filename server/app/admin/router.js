@@ -4,10 +4,10 @@ var express = require('express'),
     app = express(),
 
     jsonParser = require('app/util/body-parse').json,
-    auth = require('app/util/auth'),
     prizes = require('app/prizes/prizes_model'),
     sponsors = require('app/sponsors/sponsor_model'),
     alerts = require('app/alerts/alerts_model'),
+    admin_auth = require('app/util/admin_auth'),
 
     Users = require('app/users/user_model');
 
@@ -26,22 +26,11 @@ function makeAdmin(req, res, next) {
     });
 }
 
-function editPrize(req, res, next) {
-    prizes.findByIdAndUpdate({_id: req.params.id}, { $set: {'prizeName': req.query.prizeName, 'prize_desc': req.query.prize_desc, 'sponsor': req.query.sponsor}}, function(err, team) {
-        res.send("Updated!");
-    });
 
-}
-
-function editSponsor(req, res, next) {
-    sponsors.findByIdAndUpdate({'_id': req.params.id}, { $set: {'sponsorName': req.query.sponsorName, 'sponsor_desc': req.query.sponsor_desc}}, function(err, sponsor) {
-        res.send(sponsor);
-    });
-}
 
 function addSponsor(req, res, next) {
-    var newSponsor = new sponsors({'sponsorName':  req.params.name,
-                                    'sponsor_desc': req.query.desc});
+    var newSponsor = new sponsors({'sponsorName':  "New Sponsor",
+                                    'sponsor_desc': "Sponsor Description"});
     newSponsor.save( function(err) {
         if (err) {
             console.log(err);
@@ -53,10 +42,23 @@ function addSponsor(req, res, next) {
 
 }
 
+function editSponsor(req, res, next) {
+    sponsors.findByIdAndUpdate({'_id': req.params.id}, { $set: {'sponsorName': req.query.sponsorName, 'sponsor_desc': req.query.sponsor_desc}}, function(err, sponsor) {
+        res.send(sponsor);
+    });
+}
+
+function removeSponsor(req, res, next) {
+    sponsors.findByIdAndRemove({'_id': req.params.id}, function(err, removedSponsor) {
+        if (err) return handleError(err);
+    });
+
+}
+
 function addPrize(req, res, next) {
-    var newPrize = new prizes({'prizeName': req.params.name,
-                            'prize_desc': req.query.prize_desc,
-                            'sponsor': req.query.sponsor});
+    var newPrize = new prizes({'prizeName': "New Prize",
+                            'prize_desc': "Prize description",
+                            'sponsor': "Sponsor name"});
     newPrize.save( function(err) {
         if (err) {
             console.log(err);
@@ -69,12 +71,13 @@ function addPrize(req, res, next) {
 
 }
 
-function removeSponsor(req, res, next) {
-    sponsors.findByIdAndRemove({'_id': req.params.id}, function(err, removedSponsor) {
-        if (err) return handleError(err);
+function editPrize(req, res, next) {
+    prizes.findByIdAndUpdate({_id: req.params.id}, { $set: {'prizeName': req.query.prizeName, 'prize_desc': req.query.prize_desc, 'sponsor': req.query.sponsor}}, function(err, team) {
+        res.send("Updated!");
     });
 
 }
+
 
 function removePrize(req, res, next) {
     //Passing in the id of the prize we want to remove
@@ -99,25 +102,27 @@ function addAlert(req, res, next) {
 }
 
 function deleteAlert(req, res, next) {
+    //Not sure about implementing this yet.
 
 }
 
 function editAlert(req, res, next) {
+    //Not sure about implementing this yet
 
 }
 
 //Admin add endpoint
-router.post('/add', makeAdmin);
+router.post('/add', admin_auth, makeAdmin);
 //Sponsor endpoints
-router.post('/sponsor/:name', addSponsor);
-router.delete('/sponsor/:id', removeSponsor);
-router.put('/sponsor/:id', editSponsor);
+router.post('/sponsor/', admin_auth, addSponsor);
+router.delete('/sponsor/:id', admin_auth, removeSponsor);
+router.put('/sponsor/:id', admin_auth, editSponsor);
 //Prizes endpoints
-router.post('/prize/:name', addPrize);
-router.delete('/prize/:id', removePrize);
-router.put('/prize/:id', editPrize);
+router.post('/prize/', admin_auth, addPrize);
+router.delete('/prize/:id', admin_auth, removePrize);
+router.put('/prize/:id', admin_auth, editPrize);
 //Alerts endpoints
-router.post('/alert/add', addAlert);
-router.put('/alert/:id', editAlert);
-router.delete('/alert/:id', deleteAlert);
+router.post('/alert/add', admin_auth, addAlert);
+router.put('/alert/:id', admin_auth, editAlert);
+router.delete('/alert/:id', admin_auth, deleteAlert);
 module.exports = router;
