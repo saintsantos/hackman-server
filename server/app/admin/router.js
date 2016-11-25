@@ -43,7 +43,7 @@ function addSponsor(req, res, next) {
 
 function editSponsor(req, res, next) {
     sponsors.findByIdAndUpdate({'_id': req.params.id}, { $set: {'sponsorName': req.query.sponsorName, 'sponsor_desc': req.query.sponsor_desc}}, function(err, sponsor) {
-        res.send(sponsor);
+        res.status(200).send(sponsor);
     });
 }
 
