@@ -5,6 +5,7 @@ var express = require('express'),
 
     jsonParser = require('app/util/body-parse').json,
     auth = require('app/util/auth'),
+    admin_auth = require('app/util/admin_auth'),
 
     Users = require('./user_model');
 
@@ -15,7 +16,28 @@ function loginUser(req, res, next) {
     jwt = req.get('token');
     email = req.query.email;
     username = req.query.username;
-    console.log("Query: ", req.query);
+    console.log(jwt);
+    if (email === undefined || username === undefined) {
+        res.status(404).send(("Username or email undefined"));
+    } else {
+        Users.findOne({'username': req.query.username, 'email': req.query.email}, function(err, user) {
+            if (err) return handleError(err);
+            if (!user) {
+                newUser(req.query.email, req.query.username, jwt, res);
+            } else {
+                id = user._id;
+                console.log('id: ' + id);
+                console.log('jwt: ' + jwt);
+                Users.findByIdAndUpdate({_id: id}, { $set: {'jwt': jwt}}, function(err, user) {
+                    res.send("logged in!");
+                });
+            }
+        });
+    }
+}
+
+function updateJwt(req, req, next) {
+    console.log("updating jwt");
     Users.findOne({'username': req.query.username, 'email': req.query.email}, function(err, user) {
         if (err) return handleError(err);
         if (!user) {
@@ -24,50 +46,27 @@ function loginUser(req, res, next) {
             id = user._id;
             console.log('id: ' + id);
             Users.findByIdAndUpdate({_id: id}, { $set: {'jwt': jwt}}, function(err, user) {
-                //After we find our user, strip the jwt out of the response and send the profile up to the client
-                res.json({
-                    'id': user._id,
-                    'username': user.username,
-                    'email': user.email,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'role': user.role,
-                    'skills': user.skills,
-                    'events': user.events
-                })
+                res.send("Updated token");
             });
         }
     });
 }
 
 function newUser(email, username, jwt, res) {
-    //req is where all of your params are.
-    //Get the info you need by calling req.query.<what you're looking for>
-    //ex: password - req.qeury.password
-    //res.json('making a new user');
-    //We're going to be setting the username as the nickname for auth0, and get the email and such from the profile
-    //A user is given admin permissions by someone who is already an admin
-    //The profile can be updated later.
-    console.log("making a new user");
-	console.log("email: ", email);
-	console.log("Username: ", username);
-    var newUser = new Users({'username': username, 'email': email,
-                            'first_name': "", 'last_name': "",
-                            'role': "user", 'skills': "",
-                            'jwt': jwt});
-    newUser.save(function(err) {
-        if (err) return handleError(err);
-        console.log("Saved user!");
-    }).then(function() {
-        res.json({
-            'username': newUser.username,
-            'email': newUser.email,
-            'first_name': newUser.first_name,
-            'last_name': newUser.last_name,
-            'role': newUser.role,
-            'skills': newUser.skills
-        })
-    })
+    console.log("email: ", email);
+    console.log("username", username);
+    if(email === undefined || username === undefined) {
+        res.send("Error, undefined variable");
+    } else {
+        var newUser = new Users({'username': username, 'email': email,
+                                'first_name': "", 'last_name': "",
+                                'role': "user", 'skills': "",
+                                'jwt': jwt});
+        newUser.save(function(err) {
+            if (err) return handleError(err);
+            console.log("Saved user!");
+        });
+    }
 }
 
 function modifyUser(req, res, next) {
@@ -81,7 +80,7 @@ function modifyUser(req, res, next) {
   Users.findOne({'jwt': req.get('token')}, function(err, user) {
       if (err) return handleError(err);
       if (!user) {
-          res.send("user not found");
+          res.status(404).send("user not found");
       } else {
           Users.findByIdAndUpdate({'_id': user._id}, {$set: {'username': req.query.username, 'email': req.query.email,
                                                             'first_name': req.query.first_name, 'last_name': req.query.last_name
@@ -148,7 +147,7 @@ function setSkills(req, res, next) {
   Users.findOne({'jwt': req.get('token')}, function(err, user) {
       if (err) return handleError(err);
       if (!user) {
-          res.send("user not found");
+          res.status(404).send("user not found");
       } else {
           Users.findByIdAndUpdate({'_id': user._id}, {$set: {'skills': req.query.skills}}, function(err, user) {
                                                                 res.json({
@@ -162,7 +161,7 @@ function setSkills(req, res, next) {
 }
 
 function getUser(req, res, next) {
-    Users.findOne({'jwt': req.get('token')}, function(err, user) {
+    Users.findOne({'username': req.params.username}, function(err, user) {
         if (err) return handleError(err);
         if (!user) {
             res.send("user not found");
@@ -194,13 +193,15 @@ function sayHi(req, res, next) {
 
 //Just a test code for our endpoint
 router.get('/login', loginUser);
+router.get('/update', updateJwt);
 
-router.get('/', getUser);
+router.get('/:username', getUser);
 
-router.post('/:id', modifyUser);
+router.post('/:id', auth, modifyUser);
 //leave this fool in for now to test our api for stuff
-router.get('/hi', sayHi);
-router.delete('/', deleteUser);
+router.get('/hi', auth, sayHi);
+//Should only be visible to admins and users who choose to remove their account. Dunno what to do yet.
+router.delete('/:id', auth, deleteUser);
 //just checking login functionality, will be updated at a later point to enhance security.
 router.post('/check', auth);
 

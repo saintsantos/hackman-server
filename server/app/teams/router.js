@@ -15,6 +15,7 @@ function getTeamName(req, res, next) {
 
 function newTeam(req, res, next) {
     //only needs a project description to be sent via request for the teams to be formed.
+    //Choosing not to do this from the frontend, do it on the backend instead.
     console.log("received request");
     console.log(req.params)
     console.log(req.query)
@@ -22,14 +23,14 @@ function newTeam(req, res, next) {
     users.findOne({'jwt': req.get('token')}, function(err, user) {
         if (err) return handleError(err);
         if (!user) {
-            res.send("No user found");
+            res.status(404).send("No user found");
         } else {
             console.log(req.params);
             var newTeam = new team({'teamname': teamName,
                                     'created_by': user._id,
-                                    'proj_desc': req.query.proj_desc,
-                                    'status': req.query.status,
-                                    'location': req.query.location,
+                                    'proj_desc': "This is a Project",
+                                    'status': "This is a status",
+                                    'location': "At a location",
                                     'teammates': [user.username]} );
             newTeam.save( function(err) {
                 if (err) {
@@ -50,65 +51,16 @@ function deleteTeam(req, res, next) {
     });
 }
 
-function modifyTeamOld(req, res, next) {
-  //ask ed how req works, see what we can pass into it
-  //may be a good idea to switch to unique IDs as this will update all
-  //collections matching the given criteria
-
-  var new_name = req.query.teamname
-  , new_desc = req.query.proj_desc
-  , adding_member = req.query.add
-  , del_member = req.query.del
-  , o_name = {teamname: req.query.original_name};
-
-
-  //flow: checks to see if we're adding or removing a member, sets up the appropriate
-  // JSON object and hands it off to findOneAndUpdate
-
-  if(adding_member){var member_to_tweak = {$addToSet: {teammates: req.query.member}};}
-  if(del_member){var member_to_tweak = {$pull: {teammates: req.query.member}};}
-
-  if(adding_member || del_member){team.findOneAndUpdate(o_name,member_to_tweak,function(err,upd){
-    if(err) return handleError(err);
-  });}
-
-  //takes care of the not teammate based data
-  //eventually, I'd like to learn how to edit document arrays in findOne so I can
-  //further reduce database calls down to one
-
-  team.findOne(o_name,function(err,doc){
-    if(err) return handleError(err);
-
-    //this will stop the function from trying to modify a null "doc"
-    if(doc){
-      if(new_name){doc.teamname = req.query.teamname}
-      if(new_desc){doc.proj_desc = req.query.proj_desc}
-      doc.save();
-    }
-  });
-
-  /*if(new_desc){team.findOneAndUpdate(o_name,{proj_desc: req.query.proj_desc},function(err,upd){
-    if(err) return handleError(err);
-  });}
-  if(new_name){team.findOneAndUpdate(o_name,{teamname: req.query.teamname},function(err,upd){
-    if(err) return handleError(err);
-  });}*/
-  res.send({status: "updated!"});
-}
-
 function modifyTeam(req, res, next) {
     team.findByIdAndUpdate({_id: req.params.id}, { $set: {'teamname': req.query.teamname, 'proj_desc': req.query.proj_desc, 'status': req.query.status, 'location': req.query.location}}, function(err, team) {
-        res.send("Updated!");
+        res.status(200).send("Updated!");
     });
 }
 
 
 function getAllTeams(req, res, next) {
     team.find(function(err, teams) {
-        teams.forEach( function(s) {
-            console.log(s.teamname);
-        })
-        res.send(teams);
+        res.status(200).send(teams);
     });
 }
 
