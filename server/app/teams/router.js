@@ -91,6 +91,25 @@ function getAllTeams(req, res, next) {
     });
 }
 
+function getAllTeamsNew(req, res, next) {
+    var result = [];
+    team.find(function(err, teams) {
+        var promises = teams.map(function(currTeam){
+          return new Promise(function(resolve,reject){
+            //currTeam contains the team object we are currently working on (duh)
+            var teamInfo = {};
+            teamInfo.teamname = currTeam.teamname;
+            teamInfo.profiles = [];
+            //we need a second promise set up here
+            //also, we need to manually pull all the team info manually for the new json unless yu have a better method
+            result.push(teamInfo);
+          });
+        });
+        Promise.all(promises);
+        res.status(200).send(result);
+    });
+}
+
 function addTeammate(req, res, next) {
     console.log(req.params);
     team.findByIdAndUpdate({'_id': req.params.id}, {$addToSet: {'teammates': req.params.username}}, function(err, team) {
@@ -107,7 +126,7 @@ function removeTeammate(req, res, next) {
 
 
 
-router.get('/', getAllTeams);
+router.get('/', getAllTeamsNew);
 router.get('/:id', getTeamName);
 router.post('/:name', newTeam); //create a new team with this name
 router.put('/:id/modify/', modifyTeam); //better handling for modifying teams
