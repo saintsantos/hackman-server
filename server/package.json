@@ -8,6 +8,7 @@
     "postinstall": "node -e \"/*https://gist.github.com/branneman/8048520#gistcomment-1412502*/ var srcpath='../app'; var dstpath='node_modules/app';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
   },
   "dependencies": {
+    "async": "^2.1.4",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
     "debug": "^2.2.0",

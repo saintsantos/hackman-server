@@ -2,6 +2,7 @@
 var express = require('express'),
     router = express.Router(),
     app = express(),
+    async = require('async'),
 
     team = require('./team_model'),
     users = require('app/users/user_model');
@@ -59,8 +60,36 @@ function modifyTeam(req, res, next) {
 
 
 function getAllTeams(req, res, next) {
+    //Due to call, this whole thing needs to be asynchronous
+    var result = [];
     team.find(function(err, teams) {
-        res.status(200).send(teams);
+        teams.forEach(function(s) {
+            var team = {};
+            team.teamname = s;
+            team.profiles = [];
+            var profiles = [];
+            async.each(s.teammates), function(teammate, callback) {
+                var teammateProfile = {};
+                user = users.findOne({'username': teammate}, function(err, user) {
+                    if (err) return handleError(err);
+                    if (!user) {
+                        console.log("User not found");
+                    } else {
+                        //teammateProfile.username = teammate.username;
+                        //teammateProfile.email = teammate.email;
+                        //console.log(user.username);
+                        //teammateProfile.username = user.username;
+                        team.profiles.push(teammateProfile);
+                        callback(null);
+                    }
+                });
+
+            }, function(err) {
+                result.push(team);
+            }
+
+        });
+        res.status(200).send(result);
     });
 }
 
