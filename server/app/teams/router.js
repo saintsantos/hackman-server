@@ -60,15 +60,13 @@ function modifyTeam(req, res, next) {
 
 
 function getAllTeams(req, res, next) {
-    //Due to call, this whole thing needs to be asynchronous
     var result = [];
     team.find(function(err, teams) {
         teams.forEach(function(s) {
             var team = {};
             team.teamname = s;
             team.profiles = [];
-            var profiles = [];
-            async.each(s.teammates), function(teammate, callback) {
+            s.teammates.forEach(function(teammate) {
                 var teammateProfile = {};
                 user = users.findOne({'username': teammate}, function(err, user) {
                     if (err) return handleError(err);
@@ -79,15 +77,15 @@ function getAllTeams(req, res, next) {
                         //teammateProfile.email = teammate.email;
                         //console.log(user.username);
                         //teammateProfile.username = user.username;
-                        team.profiles.push(teammateProfile);
-                        callback(null);
+                        team.profiles.push(user);
                     }
                 });
-
-            }, function(err) {
-                result.push(team);
-            }
-
+                //console.log(user);
+                //team.profiles.push(teammateProfile);
+            });
+            //console.log(team);
+            //console.log(team);
+            result.push(team);
         });
         res.status(200).send(result);
     });
