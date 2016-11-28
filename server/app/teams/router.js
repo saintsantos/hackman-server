@@ -102,6 +102,20 @@ function getAllTeamsNew(req, res, next) {
             teamInfo.profiles = [];
             //we need a second promise set up here
             //also, we need to manually pull all the team info manually for the new json unless yu have a better method
+            var innerProm = currTeam.teammates.map(function(currMate){
+              users.findOne({'username': currMate}, function(err, user) {
+                  if (err) return handleError(err);
+                  if (!user) {
+                      console.log("User not found");
+                  } else {
+                      //teammateProfile.username = teammate.username;
+                      //teammateProfile.email = teammate.email;
+                      //console.log(user.username);
+                      //teammateProfile.username = user.username;
+                      teamInfo.profiles.push(user);
+                  }
+              });
+            });
             result.push(teamInfo);
           });
         });
@@ -126,7 +140,7 @@ function removeTeammate(req, res, next) {
 
 
 
-router.get('/', getAllTeamsNew);
+router.get('/', getAllTeams);
 router.get('/:id', getTeamName);
 router.post('/:name', newTeam); //create a new team with this name
 router.put('/:id/modify/', modifyTeam); //better handling for modifying teams

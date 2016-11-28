@@ -180,6 +180,23 @@ function getUser(req, res, next) {
       });
 }
 
+function getMultiUser(req, res, next) {
+    Users.find({'username': {$in: req.query.username}},function(err,user){
+      //the following was my attempt to strip out the excess data we dont need to report
+      /*res.status(200).send({
+          '_id': user._id,
+          'username': user.username,
+          'email': user.email,
+          'first_name': user.first_name,
+          'last_name': user.last_name,
+          'role': user.role,
+          'skills': user.skills,
+          'events': user.events
+      });*/
+      res.status(200).send(user);
+    });
+}
+
 function deleteUser(req, res, next) {
     Users.find({'jwt': req.get('token')}).remove().exec();
     res.send("deleted!");
@@ -193,6 +210,7 @@ function sayHi(req, res, next) {
 
 //Just a test code for our endpoint
 router.get('/login', loginUser);
+router.get('/multi', getMultiUser);
 router.get('/update', updateJwt);
 
 router.get('/:username', getUser);
