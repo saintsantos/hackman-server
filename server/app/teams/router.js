@@ -3,6 +3,7 @@ var express = require('express'),
     router = express.Router(),
     app = express(),
     async = require('async'),
+    q = require('q'),
 
     team = require('./team_model'),
     users = require('app/users/user_model');
@@ -66,7 +67,10 @@ function getAllTeams(req, res, next) {
             var team = {};
             team.teamname = s;
             team.profiles = [];
-            s.teammates.forEach(function(teammate) {
+            s.find({'username': {$in: s.teammates}}, function (err, teammates) {
+                console.log(teammates);
+            })
+            /*s.teammates.forEach(function(teammate) {
                 var teammateProfile = {};
                 user = users.findOne({'username': teammate}, function(err, user) {
                     if (err) return handleError(err);
@@ -85,7 +89,7 @@ function getAllTeams(req, res, next) {
             });
             //console.log(team);
             //console.log(team);
-            result.push(team);
+            result.push(team);*/
         });
         res.status(200).send(result);
     });
@@ -94,34 +98,18 @@ function getAllTeams(req, res, next) {
 function getAllTeamsNew(req, res, next) {
     var result = [];
     team.find(function(err, teams) {
-        var promises = teams.map(function(currTeam){
-          return new Promise(function(resolve,reject){
-            //currTeam contains the team object we are currently working on (duh)
-            var teamInfo = {};
-            teamInfo.teamname = currTeam.teamname;
-            teamInfo.profiles = [];
-            //we need a second promise set up here
-            //also, we need to manually pull all the team info manually for the new json unless yu have a better method
-            var innerProm = currTeam.teammates.map(function(currMate){
-              users.findOne({'username': currMate}, function(err, user) {
-                  if (err) return handleError(err);
-                  if (!user) {
-                      console.log("User not found");
-                  } else {
-                      //teammateProfile.username = teammate.username;
-                      //teammateProfile.email = teammate.email;
-                      //console.log(user.username);
-                      //teammateProfile.username = user.username;
-                      teamInfo.profiles.push(user);
-                  }
-              });
-            });
-            result.push(teamInfo);
-          });
-        });
-        Promise.all(promises);
-        res.status(200).send(result);
+        res.status(200).send(teams);
     });
+}
+
+function getAllTeammatesFrontend(req, res, next) {
+    var teammates = ['saintsantos', 'tawr'];
+    users.find({'username': {$in: teammates}}, function (err, teammate) {
+        console.log(teammate);
+        res.status(200).send(teammate);
+    })
+    //console.log(req.query.test);
+
 }
 
 function addTeammate(req, res, next) {
@@ -140,8 +128,8 @@ function removeTeammate(req, res, next) {
 
 
 
-router.get('/', getAllTeams);
-router.get('/:id', getTeamName);
+router.get('/', getAllTeamsNew);
+router.get('/teammates', getAllTeammatesFrontend);
 router.post('/:name', newTeam); //create a new team with this name
 router.put('/:id/modify/', modifyTeam); //better handling for modifying teams
 router.post('/:id/modify/:username', addTeammate); //handle adding teammates
