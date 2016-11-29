@@ -60,8 +60,8 @@ function newUser(email, username, jwt, res) {
     } else {
         var newUser = new Users({'username': username, 'email': email,
                                 'first_name': "", 'last_name': "",
-                                'role': "user", 'skills': "",
-                                'jwt': jwt});
+                                'role': "user", 'github': "", 'linkedIn': "",
+                                'resume': "", 'jwt': jwt});
         newUser.save(function(err) {
             if (err) return handleError(err);
             console.log("Saved user!");
@@ -82,17 +82,9 @@ function modifyUser(req, res, next) {
       if (!user) {
           res.status(404).send("user not found");
       } else {
-          Users.findByIdAndUpdate({'_id': user._id}, {$set: {'username': req.query.username, 'email': req.query.email,
-                                                            'first_name': req.query.first_name, 'last_name': req.query.last_name
+          Users.findByIdAndUpdate({'_id': user._id}, {$set: {'first_name': req.query.first_name, 'last_name': req.query.last_name, 'github': req.query.github, 'linkedIn': req.query.linkedin, 'resume': req.query.resume
                                                           }}, function(err, user) {
-                                                                res.json({
-                                                                    'username': user.username,
-                                                                    'email': user.email,
-                                                                    'first_name': user.first_name,
-                                                                    'last_name': user.last_name,
-                                                                    'skills': user.skills
-                                                                });
-
+                                                                res.status(200).send(user);
         });
       }
 
@@ -173,8 +165,9 @@ function getUser(req, res, next) {
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'role': user.role,
-                'skills': user.skills,
-                'events': user.events
+                'github': user.github,
+                'linkedIn': user.linkedin,
+                'resume': user.resume
             })
           }
       });
@@ -215,7 +208,7 @@ router.get('/update', updateJwt);
 
 router.get('/:username', getUser);
 
-router.post('/:id', auth, modifyUser);
+router.put('/:id', auth, modifyUser);
 //leave this fool in for now to test our api for stuff
 router.get('/hi', auth, sayHi);
 //Should only be visible to admins and users who choose to remove their account. Dunno what to do yet.

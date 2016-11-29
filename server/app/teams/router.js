@@ -70,29 +70,9 @@ function getAllTeams(req, res, next) {
             s.find({'username': {$in: s.teammates}}, function (err, teammates) {
                 console.log(teammates);
             })
-            /*s.teammates.forEach(function(teammate) {
-                var teammateProfile = {};
-                user = users.findOne({'username': teammate}, function(err, user) {
-                    if (err) return handleError(err);
-                    if (!user) {
-                        console.log("User not found");
-                    } else {
-                        //teammateProfile.username = teammate.username;
-                        //teammateProfile.email = teammate.email;
-                        //console.log(user.username);
-                        //teammateProfile.username = user.username;
-                        team.profiles.push(user);
-                    }
-                });
-                //console.log(user);
-                //team.profiles.push(teammateProfile);
-            });
-            //console.log(team);
-            //console.log(team);
-            result.push(team);*/
-        });
         res.status(200).send(result);
     });
+});
 }
 
 function getAllTeamsNew(req, res, next) {
@@ -103,8 +83,8 @@ function getAllTeamsNew(req, res, next) {
 }
 
 function getAllTeammatesFrontend(req, res, next) {
-    var teammates = ['saintsantos', 'tawr'];
-    users.find({'username': {$in: teammates}}, function (err, teammate) {
+    //var teammates = ['saintsantos', 'tawr'];
+    users.find({'username': {$in: req.query.teammates}}, function (err, teammate) {
         console.log(teammate);
         res.status(200).send(teammate);
     })
