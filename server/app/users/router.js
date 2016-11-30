@@ -208,11 +208,11 @@ router.get('/update', updateJwt);
 
 router.get('/:username', getUser);
 
-router.put('/:id', auth, modifyUser);
+router.put('/:id', modifyUser);
 //leave this fool in for now to test our api for stuff
-router.get('/hi', auth, sayHi);
+router.get('/hi', sayHi);
 //Should only be visible to admins and users who choose to remove their account. Dunno what to do yet.
-router.delete('/:id', auth, deleteUser);
+router.delete('/:id', deleteUser);
 //just checking login functionality, will be updated at a later point to enhance security.
 router.post('/check', auth);
 
