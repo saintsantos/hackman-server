@@ -59,6 +59,12 @@ function modifyTeam(req, res, next) {
     });
 }
 
+function askForHelp(req, res, next) {
+    team.findByIdAndUpdate({_id: req.params.id}, { $set: {'help': req.query.help}}, function(err, team) {
+        res.status(200).send("Updated!");
+    })
+}
+
 
 function getAllTeams(req, res, next) {
     var result = [];
@@ -115,5 +121,6 @@ router.put('/:id/modify/', modifyTeam); //better handling for modifying teams
 router.post('/:id/modify/:username', addTeammate); //handle adding teammates
 router.delete('/:id/modify/:username', removeTeammate);
 router.delete('/:id', deleteTeam);
+router.post('/:id/help', askForHelp);
 
 module.exports = router;

@@ -14,13 +14,13 @@ var express = require('express'),
 
 
 function makeAdmin(req, res, next) {
-    Users.findByIdAndUpdate({_id: id}, { $set: {'role': 'admin'}}, function(err, user) {
+    Users.findByIdAndUpdate({'_id': req.params.id}, { $set: {'role': 'admin'}}, function(err, user) {
         res.send("Admin added!");
     });
 }
 
 function removeAdmin(req, res, next) {
-    Users.findByIdAndUpdate({_id: id}, { $set: {'role': 'user'}}, function(err, user) {
+    Users.findByIdAndUpdate({'_id': req.params.id}, { $set: {'role': 'user'}}, function(err, user) {
         res.send("Admin removed!");
     });
 }
@@ -111,8 +111,8 @@ function editAlert(req, res, next) {
 }
 
 //Admin add endpoint
-router.delete('/', removeAdmin);
-router.post('/add', makeAdmin);
+router.delete('/:id', removeAdmin);
+router.post('/:id', makeAdmin);
 //Sponsor endpoints
 router.post('/sponsor/', addSponsor);
 router.delete('/sponsor/:id', removeSponsor);

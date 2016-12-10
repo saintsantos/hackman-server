@@ -9,6 +9,7 @@ var teamSchema = new Schema({
     proj_desc: String,
     status: String,
     location: String,
+    help: Boolean,
     teammates: []
 }, {collection: 'teams'});
 
