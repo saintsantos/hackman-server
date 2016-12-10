@@ -25,6 +25,13 @@ function removeAdmin(req, res, next) {
     });
 }
 
+function adminCall(req, res, next) {
+    console.log(req.query.role);
+    Users.findByIdAndUpdate({'_id': req.params.id}, { $set: {'role': req.query.role}}, function(err, user) {
+        res.send("Permissions Updated!");
+    });
+}
+
 
 
 function addSponsor(req, res, next) {
@@ -112,7 +119,7 @@ function editAlert(req, res, next) {
 
 //Admin add endpoint
 router.delete('/:id', admin_auth, removeAdmin);
-router.post('/:id', admin_auth, makeAdmin);
+router.post('/:id', admin_auth, adminCall);
 //Sponsor endpoints
 router.post('/sponsor/', admin_auth, addSponsor);
 router.delete('/sponsor/:id', admin_auth, removeSponsor);
