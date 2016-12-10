@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prestart": "npm install",
-    "start": "nodemon --debug app/server.js",
+    "start": "nodemon --debug app/index.js",
     "postinstall": "node -e \"/*https://gist.github.com/branneman/8048520#gistcomment-1412502*/ var srcpath='../app'; var dstpath='node_modules/app';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
   },
   "dependencies": {

@@ -1,5 +1,8 @@
 //This will hold express and route initialization
 var express = require('express'),
+    http = require('http'),
+    https = require('https'),
+    fs = require('fs'),
 
     //create "app"
     app = express();
@@ -13,6 +16,14 @@ var db = require('app/util/db');
 
 //cors
 app.use(require('app/util/cors'));
+
+//config
+var config = require('app/util/config');
+
+var options = {
+    key: 'add key here',
+    cert: 'add key here'
+};
 
 
 //API endpoints
@@ -39,4 +50,6 @@ app.use(function(err, req, res, next) {
     });
 });
 
-module.exports = app;
+//https.createServer(options, app).listen(3000);
+http.createServer(app).listen(3000);
+//module.exports = app;

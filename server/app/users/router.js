@@ -80,7 +80,7 @@ function modifyUser(req, res, next) {
   Users.findOne({'jwt': req.get('token')}, function(err, user) {
       if (err) return handleError(err);
       if (!user) {
-          res.status(404).send("user not found");
+          res.status(404).send("user not found in check one");
       } else {
           Users.findByIdAndUpdate({'_id': user._id}, {$set: {'first_name': req.query.first_name, 'last_name': req.query.last_name, 'github': req.query.github, 'linkedIn': req.query.linkedin, 'resume': req.query.resume
                                                           }}, function(err, user) {
@@ -88,58 +88,14 @@ function modifyUser(req, res, next) {
         });
       }
 
-  })
-
-  /*var o_name ={username: req.query.orig_name},
-  new_name = req.query.username,
-  new_pass = req.query.password,
-  new_jwt = req.query.jwt,
-  new_email = req.query.email,
-  new_first = req.query.first_name,
-  new_last = req.query.last_name,
-  add_role = req.query.add_r,
-  del_role = req.query.del_r,
-  new_role = req.query.role,
-  add_skill = req.query.add_s,
-  del_skill = req.query.del_s,
-  new_skills = req.query.skills;
-
-  //flow: add/remove roles and skills, then fall into third findOne and fix the rest
-
-  if(add_role){var role_to_modify = {$addToSet: {role: req.query.role}};}
-  if(del_role){var role_to_modify = {$pull: {role: req.query.role}};}
-  if(add_skill){var skill_to_modify = {$addToSet: {skills: req.query.skills}};}
-  if(del_skill){var skill_to_modify = {$pull: {skills: req.query.skills}};}
-
-  if(add_role || del_role){user.findOneAndUpdate(o_name,role_to_modify,function(err,upd){
-    if(err) return handleError(err);
-  });}
-  if(add_skill || del_skill){user.findOneAndUpdate(o_name,skill_to_modify,function(err,upd){
-    if(err) return handleError(err);
-  });}
-
-  user.findOne(o_name,function(err,doc){
-    if(err) return handleError(err);
-
-    //this will stop the function from trying to modify a null "doc"
-    if(doc){
-      if(new_name){doc.username = req.query.username}
-      if(new_pass){doc.password = req.query.password}
-      if(new_jwt){doc.jwt = req.query.jwt}
-      if(new_email){doc.email = req.query.email}
-      if(new_first){doc.first_name = req.query.first_last}
-      if(new_last){doc.last_name = req.query.last_name}
-      doc.save();
-      }
-  });*/
+  });
 }
 
 function setSkills(req, res, next) {
-
   Users.findOne({'jwt': req.get('token')}, function(err, user) {
       if (err) return handleError(err);
       if (!user) {
-          res.status(404).send("user not found");
+          res.status(404).send("user not found in check 2");
       } else {
           Users.findByIdAndUpdate({'_id': user._id}, {$set: {'skills': req.query.skills}}, function(err, user) {
                                                                 res.json({
@@ -156,7 +112,7 @@ function getUser(req, res, next) {
     Users.findOne({'username': req.params.username}, function(err, user) {
         if (err) return handleError(err);
         if (!user) {
-            res.send("user not found");
+            res.send("user not found in check 3");
         } else {
             res.json({
                 '_id': user._id,
@@ -175,17 +131,6 @@ function getUser(req, res, next) {
 
 function getMultiUser(req, res, next) {
     Users.find({'username': {$in: req.query.username}},function(err,user){
-      //the following was my attempt to strip out the excess data we dont need to report
-      /*res.status(200).send({
-          '_id': user._id,
-          'username': user.username,
-          'email': user.email,
-          'first_name': user.first_name,
-          'last_name': user.last_name,
-          'role': user.role,
-          'skills': user.skills,
-          'events': user.events
-      });*/
       res.status(200).send(user);
     });
 }
@@ -210,7 +155,7 @@ router.get('/:username', getUser);
 
 router.put('/:id', modifyUser);
 //leave this fool in for now to test our api for stuff
-router.get('/hi', sayHi);
+router.get('/test/hi', sayHi);
 //Should only be visible to admins and users who choose to remove their account. Dunno what to do yet.
 router.delete('/:id', deleteUser);
 //just checking login functionality, will be updated at a later point to enhance security.
