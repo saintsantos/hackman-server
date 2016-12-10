@@ -36,22 +36,6 @@ function loginUser(req, res, next) {
     }
 }
 
-function updateJwt(req, req, next) {
-    console.log("updating jwt");
-    Users.findOne({'username': req.query.username, 'email': req.query.email}, function(err, user) {
-        if (err) return handleError(err);
-        if (!user) {
-            newUser(req.query.email, req.query.username, jwt, res);
-        } else {
-            id = user._id;
-            console.log('id: ' + id);
-            Users.findByIdAndUpdate({_id: id}, { $set: {'jwt': jwt}}, function(err, user) {
-                res.send("Updated token");
-            });
-        }
-    });
-}
-
 function newUser(email, username, jwt, res) {
     console.log("email: ", email);
     console.log("username", username);
@@ -70,13 +54,6 @@ function newUser(email, username, jwt, res) {
 }
 
 function modifyUser(req, res, next) {
-  //ask ed how req works, see what we can pass into it
-  //may be a good idea to switch to unique IDs as this will update all
-  //collections matching the given criteria
-  //This will accept the post from the profile page. It will send the entire user object,
-  //regardless of what updates. It's easier to update the entire user object than to hunt,
-  //for each element that changes.
-
   Users.findOne({'jwt': req.get('token')}, function(err, user) {
       if (err) return handleError(err);
       if (!user) {
@@ -149,16 +126,14 @@ function sayHi(req, res, next) {
 //Just a test code for our endpoint
 router.get('/login', loginUser);
 router.get('/multi', getMultiUser);
-router.get('/update', updateJwt);
+//router.get('/update', auth, updateJwt);
 
-router.get('/:username', getUser);
+router.get('/:username', auth, getUser);
 
-router.put('/:id', modifyUser);
+router.put('/:id', auth, modifyUser);
 //leave this fool in for now to test our api for stuff
-router.get('/test/hi', sayHi);
+router.get('/check/hi', admin_auth, sayHi);
 //Should only be visible to admins and users who choose to remove their account. Dunno what to do yet.
-router.delete('/:id', deleteUser);
-//just checking login functionality, will be updated at a later point to enhance security.
-router.post('/check', auth);
+router.delete('/:id', auth, deleteUser);
 
 module.exports = router;

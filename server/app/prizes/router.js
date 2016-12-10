@@ -7,17 +7,13 @@ var express = require('express'),
     auth = require('app/util/auth'),
     prizes = require('./prizes_model');
 
-//Need to add event info here to filter prizes
 
 function getPrizes(req, res, next) {
-    //Need to filter this for specific events
     prizes.find(function(err, teams) {
         res.send(teams);
     });
 }
 
-
-//Get all of the prizes for the event.
 router.get('/', getPrizes);
 
 

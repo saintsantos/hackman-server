@@ -4,6 +4,7 @@ var express = require('express'),
     app = express(),
     async = require('async'),
     q = require('q'),
+    auth = require('app/util/auth'),
 
     team = require('./team_model'),
     users = require('app/users/user_model');
@@ -116,11 +117,11 @@ function removeTeammate(req, res, next) {
 
 router.get('/', getAllTeamsNew);
 router.get('/teammates', getAllTeammatesFrontend);
-router.post('/:name', newTeam); //create a new team with this name
-router.put('/:id/modify/', modifyTeam); //better handling for modifying teams
-router.post('/:id/modify/:username', addTeammate); //handle adding teammates
-router.delete('/:id/modify/:username', removeTeammate);
-router.delete('/:id', deleteTeam);
-router.post('/:id/help', askForHelp);
+router.post('/:name', auth, newTeam); //create a new team with this name
+router.put('/:id/modify/', auth, modifyTeam); //better handling for modifying teams
+router.post('/:id/modify/:username', auth, addTeammate); //handle adding teammates
+router.delete('/:id/modify/:username', auth, removeTeammate);
+router.delete('/:id', auth, deleteTeam);
+router.post('/:id/help', auth, askForHelp);
 
 module.exports = router;

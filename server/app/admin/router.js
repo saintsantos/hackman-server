@@ -111,18 +111,18 @@ function editAlert(req, res, next) {
 }
 
 //Admin add endpoint
-router.delete('/:id', removeAdmin);
-router.post('/:id', makeAdmin);
+router.delete('/:id', admin_auth, removeAdmin);
+router.post('/:id', admin_auth, makeAdmin);
 //Sponsor endpoints
-router.post('/sponsor/', addSponsor);
-router.delete('/sponsor/:id', removeSponsor);
-router.put('/sponsor/:id', editSponsor);
+router.post('/sponsor/', admin_auth, addSponsor);
+router.delete('/sponsor/:id', admin_auth, removeSponsor);
+router.put('/sponsor/:id', admin_auth, editSponsor);
 //Prizes endpoints
-router.post('/prize/', addPrize);
-router.delete('/prize/:id', removePrize);
-router.put('/prize/:id', editPrize);
+router.post('/prize/', admin_auth, addPrize);
+router.delete('/prize/:id', admin_auth, removePrize);
+router.put('/prize/:id', admin_auth, editPrize);
 //Alerts endpoints
-router.post('/alert/add', addAlert);
-router.put('/alert/:id', editAlert);
-router.delete('/alert/:id', deleteAlert);
+router.post('/alert/add', admin_auth, addAlert);
+router.put('/alert/:id', admin_auth, editAlert);
+router.delete('/alert/:id', admin_auth, deleteAlert);
 module.exports = router;
