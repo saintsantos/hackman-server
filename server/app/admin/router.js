@@ -35,6 +35,7 @@ function adminCall(req, res, next) {
 
 
 function addSponsor(req, res, next) {
+    console.log("New sponsor to make");
     var newSponsor = new sponsors({'sponsorName':  "New Sponsor",
                                     'sponsor_desc': "Sponsor Description"});
     newSponsor.save( function(err) {
@@ -43,6 +44,7 @@ function addSponsor(req, res, next) {
         }
         console.log("Saved Sponsor!");
     }).then(function() {
+        console.log(newSponsor);
         res.send(newSponsor);
     });
 
@@ -121,11 +123,11 @@ function editAlert(req, res, next) {
 router.delete('/:id', admin_auth, removeAdmin);
 router.post('/:id', admin_auth, adminCall);
 //Sponsor endpoints
-router.post('/sponsor/', admin_auth, addSponsor);
+router.post('/sponsor/new', admin_auth, addSponsor);
 router.delete('/sponsor/:id', admin_auth, removeSponsor);
 router.put('/sponsor/:id', admin_auth, editSponsor);
 //Prizes endpoints
-router.post('/prize/', admin_auth, addPrize);
+router.post('/prize/new', admin_auth, addPrize);
 router.delete('/prize/:id', admin_auth, removePrize);
 router.put('/prize/:id', admin_auth, editPrize);
 //Alerts endpoints
