@@ -16,6 +16,7 @@ var express = require('express'),
 function makeAdmin(req, res, next) {
     Users.findByIdAndUpdate({'_id': req.params.id}, { $set: {'role': 'admin'}}, function(err, user) {
         res.send("Admin added!");
+      console.log("HEllo");
     });
 }
 
